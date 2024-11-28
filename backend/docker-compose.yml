@@ -1,0 +1,29 @@
+# Next.js 14 Project
+# docker-compose.yml
+version: "3.8"
+
+services:
+  api:
+    container_name: express-api'
+    env_file:
+      - .env*
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: TARGET=production docker-compose up -d
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=${PORT:-8080}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    command: ${COMMAND:-npm run start}
+    networks:
+      - api-network
+
+networks:
+  api-network:
+    driver: bridge

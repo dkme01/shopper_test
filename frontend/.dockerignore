@@ -1,0 +1,10 @@
+.git
+node_modules
+**/node_modules
+**/dist
+**/build
+**/.next
+.idea/
+.vercel
+**/.idea/
+**/.vercel/

@@ -1,0 +1,32 @@
+
+version: '3.8'
+
+services:
+  nextjs:
+    container_name: nextjs-app
+    build:
+      context: .
+      target: TARGET=runner docker-compose up -d
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - "80:80"
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - PORT=${PORT:-80}
+      - DATABASE_URL=${DATABASE_URL}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    command: ${COMMAND:-npm run dev} # Default to dev command
+    networks:
+      - app-network
+
+volumes:
+  postgres-data:
+  redis-data:
+
+networks:
+  app-network:
+    driver: bridge
