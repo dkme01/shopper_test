@@ -28,7 +28,6 @@ export function EstimateDetails({
         <div>
           <p className="text-sm text-muted-foreground">Duration</p>
           <p className="text-lg font-semibold">
-            {/* {parseInt(estimate.duration)} */}
             {Math.floor(parseInt(estimate.duration) / 3600)}h {parseInt(estimate.duration) % 60}min
           </p>
         </div>

@@ -1,8 +1,8 @@
-import { GoogleMap } from '@react-google-maps/api';
-import { useEffect } from 'react';
 import { useGoogleMap } from '@/hooks/use-google-maps';
 import { MAP_CONFIG } from '@/lib/constants';
-import type { EstimateResponse, RouteResponse } from '@/types/ride';
+import type { EstimateResponse } from '@/types/ride';
+import { GoogleMap } from '@react-google-maps/api';
+import { useEffect } from 'react';
 
 interface MapDisplayProps {
   routeResponse: EstimateResponse | null;
