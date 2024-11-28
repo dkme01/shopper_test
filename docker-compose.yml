@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   backend:
@@ -10,18 +10,25 @@ services:
       - "8080:8080"
     env_file:
       - ./.env
+    environment:
+      - NODE_ENV=development
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
     volumes:
       - ./backend:/app
       - /app/node_modules
     restart: unless-stopped
     networks:
-      - app-network
+      - fullstack-network
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: frontend
+    environment:
+      - NODE_ENV=development
+      - BACKEND_API_URL=http://backend:8080
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
     ports:
       - "80:3000"
     env_file:
@@ -34,8 +41,8 @@ services:
     depends_on:
       - backend
     networks:
-      - app-network
+      - fullstack-network
 
 networks:
-  app-network:
+  fullstack-network:
     driver: bridge
