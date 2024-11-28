@@ -8,7 +8,7 @@ import type {
 } from '@/types/api';
 
 const api = axios.create({
-  baseURL: process.env.BACKEND_API_URL as string,
+  baseURL: process.env.BACKEND_API_URL as string || 'http://localhost:8080/',
   headers: {
     'Content-Type': 'application/json',
   },

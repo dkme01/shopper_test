@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Car, MapPin, History } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { RideForm } from '@/app/components/ride-form';
 import { RideHistory } from '@/app/components/ride-history';
 import { EstimateDetails } from '@/app/components/estimate-details';
@@ -18,8 +18,10 @@ import { rideService } from '@/lib/api';
 import { MapDisplay } from "./map-display";
 import { ApiResponse } from "@/types/api";
 import { cn } from "@/lib/utils";
+import { useGoogleMap } from "@/hooks/use-google-maps";
 
 export default function GoogleMapComponent() {
+  const { clearRoute } = useGoogleMap()
   const [estimateResponse, setEstimateResponse] = useState<EstimateResponse | null>(null);
   const [selectedDriver, setSelectedDriver] = useState<DriverOption | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -61,8 +63,6 @@ export default function GoogleMapComponent() {
     }
   };
 
-  console.log(estimateResponse)
-
   const handleConfirmRide = async () => {
     if (!selectedDriver || !estimateResponse) return;
 
@@ -84,7 +84,7 @@ export default function GoogleMapComponent() {
         value: selectedDriver.value,
       });
 
-      form.reset();
+      clearRoute();
       setEstimateResponse(null);
       setSelectedDriver(null);
       fetchRideHistory(formData.userId);
@@ -118,16 +118,15 @@ export default function GoogleMapComponent() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="space-y-6">
             <Tabs defaultValue="estimate" className="space-y-4">
-              <TabsList className={cn(`grid w-full grid-cols-1`, { "grid-cols-1": rides.length > 0 })}>
+              <TabsList className='grid w-full grid-cols-2'>
                 <TabsTrigger disabled={isLoading} value="estimate" className="flex items-center gap-2">
                   <MapPin className="h-4 w-4" />
                   New Ride
                 </TabsTrigger>
-                {rides.length > 0 ? <TabsTrigger disabled={isLoading} value="history" className="flex items-center gap-2">
+                <TabsTrigger disabled={isLoading} value="history" className="flex items-center gap-2">
                   <History className="h-4 w-4" />
                   Ride History
                 </TabsTrigger>
-                  : <></>}
               </TabsList>
 
               <TabsContent value="estimate" className="space-y-4">
@@ -169,23 +168,10 @@ export default function GoogleMapComponent() {
 
           <div className="lg:row-span-2">
             <MapDisplay
-              routeResponse={estimateResponse?.routeResponse}
+              routeResponse={estimateResponse}
             />
           </div>
         </div>
-
-        {/* <div className="mt-4">
-          <GoogleMap
-            mapContainerStyle={MAP_CONFIG.defaultMapContainerStyle}
-            zoom={MAP_CONFIG.defaultMapZoom}
-            center={MAP_CONFIG.defaultMapCenter}
-            options={{
-              zoomControl: true,
-              tilt: 0,
-              gestureHandling: 'auto',
-            }}
-          />
-        </div> */}
       </CardContent>
     </Card>
   );

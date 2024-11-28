@@ -2,10 +2,10 @@ import { GoogleMap } from '@react-google-maps/api';
 import { useEffect } from 'react';
 import { useGoogleMap } from '@/hooks/use-google-maps';
 import { MAP_CONFIG } from '@/lib/constants';
-import type { RouteResponse } from '@/types/ride';
+import type { EstimateResponse, RouteResponse } from '@/types/ride';
 
 interface MapDisplayProps {
-  routeResponse?: RouteResponse[];
+  routeResponse: EstimateResponse | null;
 }
 
 export function MapDisplay({ routeResponse }: MapDisplayProps) {

@@ -22,20 +22,3 @@ export interface RideEstimateResponse {
 }
 
 export interface RideConfirmRequest extends Ride { }
-
-export interface RoutePoint {
-  lat: number;
-  lng: number;
-}
-
-export interface RouteResponse {
-  points: RoutePoint[];
-  bounds: {
-    north: number;
-    south: number;
-    east: number;
-    west: number;
-  };
-  distance: number;
-  duration: string;
-}

@@ -18,7 +18,7 @@ export function DriverCard({ driver, isSelected, onSelect }: DriverCardProps) {
           <h4 className="font-medium">{driver.name}</h4>
           <p className="text-sm text-muted-foreground">{driver.vehicle}</p>
         </div>
-        <p className="text-lg font-semibold">R$ {driver.value}</p>
+        <p className="text-lg font-semibold">R$ {driver.value.toLocaleString('pt-BR', { currency: 'BRL' })}</p>
       </div>
       <p className="text-sm mb-2">{driver.description}</p>
       <div className="text-sm text-muted-foreground">

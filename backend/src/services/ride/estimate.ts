@@ -1,11 +1,9 @@
-import { Driver } from '../../models/driver';
 import { Client } from '@googlemaps/google-maps-services-js';
 import { RoutesClient } from '@googlemaps/routing';
+import { Driver } from '../../models/driver';
 import {
   RideEstimateRequest,
-  RideEstimateResponse,
-  RouteResponse,
-  RoutePoint,
+  RideEstimateResponse
 } from '../../types/ride';
 import { listDrivers } from './drivers';
 
@@ -130,35 +128,6 @@ const calculateDriverOptions = (distance: number): Driver[] => {
     .sort((a, b) => a.value - b.value);
 };
 
-const transformRouteToMapFormat = (routes: any[]): RouteResponse[] => {
-  if (!routes || routes.length === 0) return [];
-
-  const route = routes[0];
-
-  console.log('transformRouteToMapFormat', route)
-
-  // Transform polyline to lat/lng points
-  const points: RoutePoint[] = route.polyline.geoJsonLinestring.map((point: { latitude: number; longitude: number }) => ({
-    lat: point.latitude,
-    lng: point.longitude
-  }));
-
-  // Calculate bounds
-  const bounds = {
-    north: Math.max(...points.map(p => p.lat)),
-    south: Math.min(...points.map(p => p.lat)),
-    east: Math.max(...points.map(p => p.lng)),
-    west: Math.min(...points.map(p => p.lng))
-  };
-
-  return [{
-    points,
-    bounds,
-    distance: route.distanceMeters / 1000, // convert to kilometers
-    duration: route.duration || '0s'
-  }];
-};
-
 export const estimateRide = async (
   request: RideEstimateRequest,
 ): Promise<RideEstimateResponse> => {
@@ -172,11 +141,9 @@ export const estimateRide = async (
     originCoords,
     destinationCoords
   );
-  const transformedRouteResponse = transformRouteToMapFormat(routeResponse as any);
+  const routeDistance = routeResponse && routeResponse[0].distanceMeters ? routeResponse[0].distanceMeters / 1000 : 0;
 
-  const routeDistance = transformedRouteResponse[0].distance || 0;
-
-  const duration = transformedRouteResponse[0].duration || '0s';
+  const duration = routeResponse && routeResponse[0].duration ? routeResponse[0]?.duration.seconds?.toString() as string : '0s';
 
   const driverOptions = calculateDriverOptions(routeDistance);
 

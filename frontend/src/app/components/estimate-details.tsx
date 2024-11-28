@@ -18,8 +18,6 @@ export function EstimateDetails({
   onDriverSelect,
   onConfirm
 }: EstimateDetailsProps) {
-
-  console.log(estimate)
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4 p-4 bg-muted rounded-lg">
@@ -29,7 +27,10 @@ export function EstimateDetails({
         </div>
         <div>
           <p className="text-sm text-muted-foreground">Duration</p>
-          <p className="text-lg font-semibold">{estimate.duration}</p>
+          <p className="text-lg font-semibold">
+            {/* {parseInt(estimate.duration)} */}
+            {Math.floor(parseInt(estimate.duration) / 3600)}h {parseInt(estimate.duration) % 60}min
+          </p>
         </div>
       </div>
 

@@ -1,5 +1,5 @@
-import { useState, useCallback, useRef } from 'react';
-import type { RoutePoint, RouteResponse } from '@/types/ride';
+import type { EstimateResponse, RouteResponse } from '@/types/ride';
+import { useCallback, useRef, useState } from 'react';
 
 export function useGoogleMap() {
   const [map, setMap] = useState<google.maps.Map | null>(null);
@@ -16,17 +16,15 @@ export function useGoogleMap() {
     markersRef.current = [];
   }, []);
 
-  const displayRoute = useCallback((routeResponse: RouteResponse[] | undefined) => {
-    if (!map || !routeResponse) return;
+  const displayRoute = useCallback((routeResponse: EstimateResponse | null) => {
+    if (!map || !routeResponse?.routeResponse) return;
 
     console.log('routeResponse', routeResponse)
 
-    // Clear existing route
     clearRoute();
 
-    const polylineDecoded = google.maps.geometry.encoding.decodePath(routeResponse[0].encodedPolyline)
+    const polylineDecoded = google.maps.geometry.encoding.decodePath(routeResponse.routeResponse[0].polyline.encodedPolyline)
 
-    // Create and display the polyline
     const polyline = new google.maps.Polyline({
       path: polylineDecoded,
       geodesic: true,
@@ -38,13 +36,17 @@ export function useGoogleMap() {
     polyline.setMap(map);
     polylineRef.current = polyline;
 
-    // Create markers for origin and destination
-    if (routeResponse[0].points.length >= 2) {
-      const origin = routeResponse[0].points[0];
-      const destination = routeResponse[0].points[routeResponse[0].points.length - 1];
+    if (routeResponse.origin.latitude && routeResponse.destination.latitude) {
+      const origin: google.maps.LatLngLiteral = {
+        lat: routeResponse.origin.latitude,
+        lng: routeResponse.origin.longitude
+      }
+      const destination: google.maps.LatLngLiteral = {
+        lat: routeResponse.destination.latitude,
+        lng: routeResponse.destination.longitude
+      }
 
 
-      // Origin marker
       const originMarker = new google.maps.Marker({
         position: origin,
         map,
@@ -59,7 +61,6 @@ export function useGoogleMap() {
         title: 'Origin',
       });
 
-      // Destination marker
       const destinationMarker = new google.maps.Marker({
         position: destination,
         map,
@@ -76,17 +77,16 @@ export function useGoogleMap() {
 
       markersRef.current = [originMarker, destinationMarker];
 
-      // Fit bounds to show the entire route
-      const bounds = new google.maps.LatLngBounds(
-        new google.maps.LatLng(
-          routeResponse[0].bounds.south,
-          routeResponse[0].bounds.west
-        ),
-        new google.maps.LatLng(
-          routeResponse[0].bounds.north,
-          routeResponse[0].bounds.east
-        )
-      );
+      const bounds = new google.maps.LatLngBounds();
+      bounds.extend(originMarker.getPosition() as google.maps.LatLng)
+      bounds.extend(destinationMarker.getPosition() as google.maps.LatLng)
+
+      const mapWidth = bounds.getSouthWest().lng() > bounds.getNorthEast().lng()
+        ? (180 - bounds.getSouthWest().lng()) + (bounds.getNorthEast().lng() - (-180))
+        : bounds.getSouthWest().lng() - bounds.getNorthEast().lng();
+
+      bounds.extend(new google.maps.LatLng(bounds.getCenter().lat(), mapWidth))
+      map.fitBounds(bounds);
 
       map.fitBounds(bounds,
         { top: 50, right: 50, bottom: 50, left: 50 }
