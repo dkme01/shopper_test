@@ -4,7 +4,7 @@ WORKDIR /app
 FROM base AS backend-builder
 COPY backend/package*.json ./backend/
 WORKDIR /app/backend
-# RUN npm ci
+RUN npm ci
 COPY backend/ .
 RUN npm run build
 
