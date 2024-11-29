@@ -9,9 +9,9 @@ services:
     ports:
       - "8080:8080"
     env_file:
-      - ./.env
+      - ${ENV_FILE:-.env}
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=${NODE_ENV:-production}
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
     volumes:
       - ./backend:/app
@@ -25,14 +25,14 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: frontend
+    env_file:
+      - ${ENV_FILE:-.env}
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=${NODE_ENV:-production}
       - BACKEND_API_URL=http://backend:8080
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
     ports:
       - "80:3000"
-    env_file:
-      - ./.env
     volumes:
       - ./frontend:/app
       - /app/node_modules
