@@ -27,9 +27,7 @@ COPY --from=frontend-builder /app/frontend/node_modules ./frontend/node_modules
 COPY --from=frontend-builder /app/frontend/package*.json ./frontend/
 
 COPY docker-compose.yml .
-# COPY .env .
-
-ENV GOOGLE_API_KEY=AIzaSyAL--Gpx_zjJKCzzyJAWUg8hVEXuxU9XPs
+COPY .env .
 
 EXPOSE 80 8080
 
